@@ -1,2 +1,2 @@
 # aeoria-api
-Aeoriaプロジェクトの感情分析処理用APIサーバー
+Aeoriaプロジェクトの感情分析処理用APIサーバー。
