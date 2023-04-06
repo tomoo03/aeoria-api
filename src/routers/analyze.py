@@ -6,5 +6,5 @@ router = APIRouter()
 
 @router.post("/analyze")
 async def get_analyze(dto: AnalyzeDto):
-    sentimentScore = AnalyzeService().get_analyze(dto.text)
+    sentimentScore = await AnalyzeService().get_analyze(dto.text)
     return {"message": sentimentScore}
