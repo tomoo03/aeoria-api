@@ -8,6 +8,7 @@ python-dotenv = "*"
 fastapi = "*"
 httpx = "*"
 vadersentiment = "*"
+uvicorn = {extras = ["standard"], version = "*"}
 
 [dev-packages]
 
