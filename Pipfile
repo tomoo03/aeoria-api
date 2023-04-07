@@ -9,6 +9,7 @@ fastapi = "*"
 httpx = "*"
 vadersentiment = "*"
 uvicorn = {extras = ["standard"], version = "*"}
+pydantic = "*"
 
 [dev-packages]
 
