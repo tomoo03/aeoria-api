@@ -18,14 +18,3 @@ Content-Type: application/json
   ],
   "text": "いいじゃん。俺たちもう友達だろ？"
 }
-
-###
-
-POST https://api.openai.com/v1/chat/completions
-Authorization: Bearer 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
-Content-Type: application/json
-
-{
-  "model": "gpt-3.5-turbo",
-  "messages": [{"role": "user", "content": "こんにちは"}]
-}
