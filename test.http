@@ -18,3 +18,8 @@ Content-Type: application/json
   ],
   "text": "いいじゃん。俺たちもう友達だろ？"
 }
+
+###
+
+POST http://localhost:8000/chain
+Content-Type: application/json

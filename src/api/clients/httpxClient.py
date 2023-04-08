@@ -13,9 +13,8 @@ class HttpxClient:
             print(url)
             print(data)
             print(headers)
-            response: httpx.Response = await client.post(url, data=data, headers=headers, timeout=60.0)
+            response: httpx.Response = await client.post(url, data=data, headers=headers, timeout=180.0)
             print(response)
-            print(response.status_code)
             if response.status_code != httpx.codes.OK:
                 raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
             json = response.json()
@@ -26,9 +25,8 @@ class HttpxClient:
             print(url)
             print(body)
             print(headers)
-            response: httpx.Response = await client.post(url, json=body, headers=headers, timeout=60.0)
+            response: httpx.Response = await client.post(url, json=body, headers=headers, timeout=180.0)
             print(response)
-            print(response.status_code)
             if response.status_code != httpx.codes.OK:
                 raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
             json = response.json()
