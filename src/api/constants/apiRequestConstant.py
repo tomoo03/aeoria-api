@@ -1,4 +1,4 @@
-class API_CONSTANT:
+class API_REQUEST_CONSTANT:
     AUTHORIZATION = 'Authorization'
     CONTENT_TYPE = 'Content-Type'
     DEEPL: dict[str, dict[str, str] | str] = {
@@ -10,5 +10,9 @@ class API_CONSTANT:
         'URL_BASE': 'https://api.deepl.com'
     }
     OPENAI = {
-        'COMPLETION_URL': 'https://api.openai.com/v1/chat/completions'
+        'COMPLETION_URL': 'https://api.openai.com/v1/chat/completions',
+        'SCHEME': {
+            'AUTHORIZATION': 'Bearer'
+        },
+        'JSON_CONTENT_TYPE': 'application/json'
     }

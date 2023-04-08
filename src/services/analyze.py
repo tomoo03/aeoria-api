@@ -1,52 +1,81 @@
+from ..api.dto.chatgpt import ChatGPTDto, ChatGPTMessageModel
+from ..api.dto.deepl import DeeplTranslateDto
+from ..api.services.chatgptApiService import ChatGPTApiService
+from ..api.services.deeplApiService import DeeplApiService
 from ..clients.vaderSentimentClient import VaderSentimentClient
 from ..dto.analyze import AnalyzeDto
 from ..response.analyze import AnalyzeResponse
-from ..api.services.deeplApiService import DeeplApiService
-from ..api.dto.deepl import DeeplTranslateDto
+from ..api.constants.chatGptConstant import CHAT_GPT_CONSTANT
 
 class AnalyzeService:
-    deeplApi: DeeplApiService
-    vaderSentimentClient: VaderSentimentClient
-
     def __init__(self):
-        self.deeplApi = DeeplApiService()
-        self.vaderSentimentClient = VaderSentimentClient()
+        self.__chatGPTApi = ChatGPTApiService()
+        self.__deeplApi = DeeplApiService()
+        self.__vaderSentimentClient = VaderSentimentClient()
 
     async def get_vaderSentiment_analyze(self, dto: AnalyzeDto) -> AnalyzeResponse:
-        # 入力テキストの英訳処理
-        dtoFromInput: DeeplTranslateDto = {
-            'source_lang': dto.source_lang,
-            'text': dto.text,
-            'target_lang': dto.target_lang
+        print(AnalyzeDto(messages=dto.messages, source_lang=dto.source_lang, text=dto.text))
+        messages = dto.messages
+        source_lang = dto.source_lang
+        text = dto.text
+        print('requestMessages')
+        print(messages)
+
+        # 初回のchat送信時のみ、systemプロンプトを加える
+        if len(messages) == 0:
+            systemMessageModel: ChatGPTMessageModel = {
+                'content': CHAT_GPT_CONSTANT.SYSTEM_PROMPT,
+                'role': CHAT_GPT_CONSTANT.ROLE['SYSTEM']
+            }
+            messages.append(systemMessageModel)
+
+        messageModel: ChatGPTMessageModel = {
+            'content': text,
+            'role': CHAT_GPT_CONSTANT.ROLE['USER']
         }
-        translatedDto = await self.deeplApi.translate(dtoFromInput)
-        print('translatedDto')
-        print(translatedDto)
 
-        translatedMessageFromInput: str = translatedDto['translations'][0]['text']
+        # 入力テキストを履歴として格納する
+        messages.append(messageModel)
 
-        # 英訳済みテキストをChatGPTに送信する
-
-        # ChatGPTからの応答を日本語に翻訳する（非同期実行）
-        dtoFromGPT: DeeplTranslateDto = {
-            'source_lang': 'EN',
-            'text': translatedMessageFromInput,
-            'target_lang': 'JA'
+        # 入力テキストをChatGPTに送信する
+        chatGPTDto: ChatGPTDto = {
+            'messages': messages,
+            'model': CHAT_GPT_CONSTANT.MODEL
         }
-        translatedDtoFromGPT = self.deeplApi.translate(dtoFromGPT)
+        print('hogehoge')
+        chatGPTApiResponse = await self.__chatGPTApi.create(chatGPTDto)
+        print('hugahuga')
+        print(chatGPTApiResponse)
+        messageModelFromChatGPT = chatGPTApiResponse['choices'][0]['message']
 
-        # ChatGPTからの応答を感情分析する（非同期実行）
-        sentimentScore = self.vaderSentimentClient.printPolarityScores(translatedMessageFromInput)
+        # chatGPTから返却されたメッセージを履歴として格納する
+        messages.append(messageModelFromChatGPT)
 
-        # 非同期処理の終了を待つ
-        resolved = await translatedDtoFromGPT
+        # chatGPTから返却されたメッセージの英訳処理（入力が英語の場合は実行しない）
+        analyzeTargetText: str = messageModelFromChatGPT['content']
+        if source_lang != 'EN':
+            deeplTranslateDtoFromInput: DeeplTranslateDto = {
+                'source_lang': 'JA',
+                'text': messageModelFromChatGPT['content'],
+                'target_lang': 'EN'
+            }
+            translatedFromGPT = await self.__deeplApi.translate(deeplTranslateDtoFromInput)
+            print('translatedFromGPT')
+            print(translatedFromGPT)
+
+            # 英訳結果テキストを代入
+            analyzeTargetText: str = translatedFromGPT['translations'][0]['text']
+
+        # ChatGPTからの応答を感情分析する
+        sentimentScore = self.__vaderSentimentClient.printPolarityScores(analyzeTargetText)
+
         print('sentimentScore')
         print(sentimentScore)
-        print('resolved')
-        print(resolved)
+        print('messages')
+        print(messages)
 
         response: AnalyzeResponse = {
-            'text': resolved['translations'][0]['text'],
+            'messages': messages,
             'score': sentimentScore
         }
 

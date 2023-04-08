@@ -1,7 +1,7 @@
-from fastapi import APIRouter
 from ..dto.analyze import AnalyzeDto
 from ..response.analyze import AnalyzeResponse
 from ..services.analyze import AnalyzeService
+from fastapi import APIRouter
 
 router = APIRouter()
 

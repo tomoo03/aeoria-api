@@ -1,6 +1,8 @@
+from ..api.dto.chatgpt import ChatGPTMessageModel
 from pydantic import BaseModel
+from typing import List
 
 class AnalyzeDto(BaseModel):
-    source_lang: str = 'EN'
+    messages: List[dict[str, str]]
+    source_lang: str = 'JA'
     text: str
-    target_lang: str = 'JA'
