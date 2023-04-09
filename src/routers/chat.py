@@ -12,6 +12,7 @@ async def get_chat_message(dto: ChatDto) -> ChatResponse:
     return response
 
 @router.post("/chain")
-def chain() -> str:
-    result = ChatService().chain()
+def chain(dto: ChatDto) -> str:
+    print("hoge")
+    result = ChatService().chain(dto)
     return result

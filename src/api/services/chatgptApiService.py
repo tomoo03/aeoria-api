@@ -2,8 +2,9 @@ from ..clients.httpxClient import HttpxClient
 from ..constants.apiRequestConstant import API_REQUEST_CONSTANT
 from ..constants.chatGptConstant import CHAT_GPT_CONSTANT
 from ..dto.chatgpt import ChatGPTDto
+from ..dto.chatgpt import ChatGPTMessageModel
 from ..response.chatgpt import ChatGPTResponse
-from typing import Any
+from typing import Any, List
 import config
 from langchain.llms import OpenAIChat
 from langchain import PromptTemplate, LLMChain
@@ -19,7 +20,8 @@ from langchain.memory import ConversationBufferMemory
 from langchain.schema import (
     AIMessage,
     HumanMessage,
-    SystemMessage
+    SystemMessage,
+    ChatMessage
 )
 from langchain.callbacks.base import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -42,17 +44,10 @@ class ChatGPTApiService:
         response: ChatGPTResponse = await self.__httpClient.json_post(self.__COMPLETION_URL, dto, headers)
         return response
 
-    def chain(self, text: str) -> str:
-        messages = [
-            SystemMessage(content=CHAT_GPT_CONSTANT.SYSTEM_PROMPT),
-            HumanMessage(content=text),
-            AIMessage(content="ツン子っていうのよ"),
-            HumanMessage(content="なにそれ変な名前"),
-            AIMessage(content="なにそれひどい"),
-            HumanMessage(content="ごめんごめん")
-        ]
-        chat = ChatOpenAI(model_name="gpt-3.5-turbo")
-        result = chat(messages).content
+    def chain(self, messages: List[ChatGPTMessageModel]) -> str:
+        chatMessages = self.__create_messages(messages)
+        chat = ChatOpenAI(temperature=0)
+        result = chat(chatMessages).content
         return result
         # LLMの準備
         # prefix_messages = [
@@ -113,3 +108,16 @@ class ChatGPTApiService:
         # conversation.predict(input="お腹すいた")
 
         # return result
+
+    def __create_messages(self, messages: List[ChatGPTMessageModel]) -> list[SystemMessage | HumanMessage | AIMessage | ChatMessage]:
+        def callback(message: ChatGPTMessageModel):
+            print(message)
+            if (message['role'] == 'system'):
+                return SystemMessage(content=CHAT_GPT_CONSTANT.SYSTEM_PROMPT)
+            elif (message['role'] == 'user'):
+                return HumanMessage(content=message['content'])
+            elif (message['role'] == 'assistant'):
+                return AIMessage(content=message['content'])
+            else:
+                return ChatMessage(content=message['content'])
+        return list(map(callback, messages))

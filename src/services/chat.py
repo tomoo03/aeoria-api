@@ -45,7 +45,7 @@ class ChatService:
 
         return response
 
-    def chain(self) -> str:
-        text = "あなたの名前を教えてください"
-        result = self.__chatGPTApi.chain(text)
+    def chain(self, dto: ChatDto) -> str:
+        print(dto.messages)
+        result = self.__chatGPTApi.chain(dto.messages)
         return result
