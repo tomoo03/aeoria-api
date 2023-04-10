@@ -1,4 +1,3 @@
-from ..api.dto.chatgpt import ChatGPTMessageModel
 from pydantic import BaseModel
 
 class AnalyzeDto(BaseModel):

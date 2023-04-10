@@ -6,13 +6,7 @@ from fastapi import APIRouter
 router = APIRouter()
 
 @router.post("/chat")
-async def get_chat_message(dto: ChatDto) -> ChatResponse:
-    print(dto)
-    response = await ChatService().get_chat_message(dto)
-    return response
-
-@router.post("/chain")
-def chain(dto: ChatDto) -> str:
+def get_chat_message(dto: ChatDto) -> ChatResponse:
     print("hoge")
-    result = ChatService().chain(dto)
+    result = ChatService().get_chat_message(dto)
     return result

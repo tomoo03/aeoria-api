@@ -33,18 +33,18 @@ class ChatGPTApiService:
     def __init__(self):
         self.__httpClient = HttpxClient()
 
-    async def create(self, dto: ChatGPTDto) -> (Any | ChatGPTResponse):
-        headers = {
-            API_REQUEST_CONSTANT.AUTHORIZATION: f"{API_REQUEST_CONSTANT.OPENAI['SCHEME']['AUTHORIZATION']} {self.__API_KEY}",
-        }
-        body = {
-            "model": "gpt-3.5-turbo",
-            "messages": [{"role": "user", "content": "こんにちは"}]
-        }
-        response: ChatGPTResponse = await self.__httpClient.json_post(self.__COMPLETION_URL, dto, headers)
-        return response
+    # async def create(self, dto: ChatGPTDto) -> (Any | ChatGPTResponse):
+    #     headers = {
+    #         API_REQUEST_CONSTANT.AUTHORIZATION: f"{API_REQUEST_CONSTANT.OPENAI['SCHEME']['AUTHORIZATION']} {self.__API_KEY}",
+    #     }
+    #     body = {
+    #         "model": "gpt-3.5-turbo",
+    #         "messages": [{"role": "user", "content": "こんにちは"}]
+    #     }
+    #     response: ChatGPTResponse = await self.__httpClient.json_post(self.__COMPLETION_URL, dto, headers)
+    #     return response
 
-    def chain(self, messages: List[ChatGPTMessageModel]) -> str:
+    def chat(self, messages: List[ChatGPTMessageModel]) -> str:
         chatMessages = self.__create_messages(messages)
         chat = ChatOpenAI(temperature=0)
         result = chat(chatMessages).content
@@ -112,11 +112,11 @@ class ChatGPTApiService:
     def __create_messages(self, messages: List[ChatGPTMessageModel]) -> list[SystemMessage | HumanMessage | AIMessage | ChatMessage]:
         def callback(message: ChatGPTMessageModel):
             print(message)
-            if (message['role'] == 'system'):
+            if (message['role'] == CHAT_GPT_CONSTANT.ROLE['SYSTEM']):
                 return SystemMessage(content=CHAT_GPT_CONSTANT.SYSTEM_PROMPT)
-            elif (message['role'] == 'user'):
+            elif (message['role'] == CHAT_GPT_CONSTANT.ROLE['USER']):
                 return HumanMessage(content=message['content'])
-            elif (message['role'] == 'assistant'):
+            elif (message['role'] == CHAT_GPT_CONSTANT.ROLE['ASSISTANT']):
                 return AIMessage(content=message['content'])
             else:
                 return ChatMessage(content=message['content'])

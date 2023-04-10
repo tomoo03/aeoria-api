@@ -16,12 +16,13 @@ class AnalyzeService:
         # メッセージの英訳処理（入力が英語の場合は実行しない）
         analyzeTargetText: str = text
         if source_lang != 'EN':
-            deeplTranslateDto: DeeplTranslateDto = {
-                'source_lang': 'JA',
-                'text': text,
-                'target_lang': 'EN'
-            }
+            deeplTranslateDto: DeeplTranslateDto = DeeplTranslateDto(
+                source_lang=source_lang,
+                text=text,
+                target_lang='EN'
+            ).dict()
             translatedText = await self.__deeplApi.translate(deeplTranslateDto)
+            print(translatedText)
 
             # 英訳結果テキストを代入
             analyzeTargetText: str = translatedText
@@ -29,8 +30,11 @@ class AnalyzeService:
         # テキストを感情分析する
         sentimentScore = self.__vaderSentimentClient.printPolarityScores(analyzeTargetText)
 
-        response: AnalyzeResponse = {
-            'score': sentimentScore
-        }
+        response: AnalyzeResponse = AnalyzeResponse(
+            neg=sentimentScore['neg'],
+            neu=sentimentScore['neu'],
+            pos=sentimentScore['pos'],
+            compound=sentimentScore['compound']
+        )
 
         return response
