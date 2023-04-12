@@ -25,6 +25,7 @@ from langchain.schema import (
 )
 from langchain.callbacks.base import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+import openai
 
 class ChatGPTApiService:
     __API_KEY: str = config.OPENAI_API_KEY
@@ -45,10 +46,34 @@ class ChatGPTApiService:
     #     return response
 
     def chat(self, messages: List[ChatGPTMessageModel]) -> str:
-        chatMessages = self.__create_messages(messages)
-        chat = ChatOpenAI(temperature=0)
-        result = chat(chatMessages).content
-        return result
+        # chatMessages = self.__create_messages(messages)
+        # chat = ChatOpenAI(temperature=0)
+        # APIリクエストを作成する
+        streamData = openai.ChatCompletion.create(
+            frequency_penalty=0.5,
+            max_tokens=1024,
+            messages=messages,
+            model="gpt-3.5-turbo",
+            n=1,
+            presence_penalty=0.5,
+            stop=None,
+            stream=True,
+            temperature=0.5,
+        )
+
+        sentence = ''
+        target_char = ['。', '！', '？', '\n']
+        for chunk in streamData:
+            content: str = chunk['choices'][0]['delta'].get('content')
+
+            if (content == None):
+                pass
+            else:
+                sentence += content
+                print(content, end='', flush=True)
+
+        # result = chat(chatMessages).content
+        return sentence
         # LLMの準備
         # prefix_messages = [
         #     {"role": "system", "content": CHAT_GPT_CONSTANT.SYSTEM_PROMPT}
