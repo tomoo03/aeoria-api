@@ -9,7 +9,7 @@ class ChatService:
     def __init__(self):
         self.__chatGPTApi = ChatGPTApiService()
 
-    def get_chat_message(self, dto: ChatDto) -> List[ChatGPTMessageModel]:
+    async def get_chat_message(self, dto: ChatDto) -> List[ChatGPTMessageModel]:
         print(dto.messages)
         messages = dto.messages
         text = dto.text
@@ -31,14 +31,15 @@ class ChatService:
         messages.append(messageModel)
 
         # 入力テキストをChatGPTに送信する
-        result = self.__chatGPTApi.chat(messages)
+        result = await self.__chatGPTApi.chat(messages)
         print('test')
         resultMessageModel: ChatGPTMessageModel = ChatGPTMessageModel(
-            content=result,
+            content=f"{result}",
             role=CHAT_GPT_CONSTANT.ROLE['ASSISTANT']
         ).dict()
         print("test2")
+        yield resultMessageModel
         # chatGPTから返却されたメッセージを履歴として格納する
-        messages.append(resultMessageModel)
-        response: ChatResponse = ChatResponse(messages=messages).dict()
-        return response
+        # messages.append(resultMessageModel)
+        # response: ChatResponse = ChatResponse(messages=messages).dict()
+        # return response

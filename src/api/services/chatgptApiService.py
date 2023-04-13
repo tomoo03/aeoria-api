@@ -45,7 +45,7 @@ class ChatGPTApiService:
     #     response: ChatGPTResponse = await self.__httpClient.json_post(self.__COMPLETION_URL, dto, headers)
     #     return response
 
-    def chat(self, messages: List[ChatGPTMessageModel]) -> str:
+    async def chat(self, messages: List[ChatGPTMessageModel]) -> str:
         # chatMessages = self.__create_messages(messages)
         # chat = ChatOpenAI(temperature=0)
         # APIリクエストを作成する
@@ -63,17 +63,21 @@ class ChatGPTApiService:
 
         sentence = ''
         target_char = ['。', '！', '？', '\n']
-        for chunk in streamData:
+        async for chunk in streamData:
             content: str = chunk['choices'][0]['delta'].get('content')
 
             if (content == None):
                 pass
             else:
-                sentence += content
-                print(content, end='', flush=True)
+                if (content in target_char):
+                    sentence += content
+                    yield sentence
+                    sentence = ''
+                else:
+                    sentence += content
+                    print(content, end='', flush=True)
 
         # result = chat(chatMessages).content
-        return sentence
         # LLMの準備
         # prefix_messages = [
         #     {"role": "system", "content": CHAT_GPT_CONSTANT.SYSTEM_PROMPT}
