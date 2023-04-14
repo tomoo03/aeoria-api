@@ -89,6 +89,7 @@ async def get_chat_message(websocket: WebSocket):
         messages: List[ChatGPTMessageModel] = result['messages']
         sentence = ''
         full_text = ''
+        message_index = 0
         for chunk in generator:
             text = chunk['choices'][0]['delta'].get('content')
             if (text != None):
@@ -99,10 +100,12 @@ async def get_chat_message(websocket: WebSocket):
                     split_response = {
                         'status': 'success',
                         'message_category': 'split',
-                        'message': sentence
+                        'message': sentence,
+                        'message_index': message_index
                     }
                     await websocket.send_text(f"{split_response}")
                     sentence = ''
+                    message_index += 1
             else:
                 if (chunk['choices'][0].get('finish_reason') != None):
                     messages.append({
