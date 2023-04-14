@@ -45,10 +45,11 @@ class ChatGPTApiService:
     #     response: ChatGPTResponse = await self.__httpClient.json_post(self.__COMPLETION_URL, dto, headers)
     #     return response
 
-    async def chat(self, messages: List[ChatGPTMessageModel]) -> str:
+    async def chat(self, messages: List[ChatGPTMessageModel]):
         # chatMessages = self.__create_messages(messages)
         # chat = ChatOpenAI(temperature=0)
         # APIリクエストを作成する
+        print('streamData')
         streamData = openai.ChatCompletion.create(
             frequency_penalty=0.5,
             max_tokens=1024,
@@ -64,11 +65,12 @@ class ChatGPTApiService:
         sentence = ''
         target_char = ['。', '！', '？', '\n']
         async for chunk in streamData:
+            finishReason = chunk['choices'][0]['delta'].get('finish_reason')
             content: str = chunk['choices'][0]['delta'].get('content')
 
-            if (content == None):
+            if (finishReason == None and content == None):
                 pass
-            else:
+            elif (finishReason == None and content != None):
                 if (content in target_char):
                     sentence += content
                     yield sentence
@@ -76,6 +78,9 @@ class ChatGPTApiService:
                 else:
                     sentence += content
                     print(content, end='', flush=True)
+            else:
+                for message in messages:
+                    yield message['content']
 
         # result = chat(chatMessages).content
         # LLMの準備
