@@ -115,7 +115,8 @@ async def get_chat_message(websocket: WebSocket):
                     finish_response = {
                         'status': 'success',
                         'message_category': 'finish',
-                        'messages': messages
+                        'messages': messages,
+                        'message_index': message_index
                     }
                     await websocket.send_text(f"{finish_response}")
 
