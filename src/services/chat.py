@@ -1,18 +1,17 @@
 from ..api.constants.chatGptConstant import CHAT_GPT_CONSTANT
-from ..api.dto.chatgpt import ChatGPTDto, ChatGPTMessageModel
+from ..api.dto.chatgpt import  ChatGPTMessageModel
 from ..api.services.chatgptApiService import ChatGPTApiService
 from ..dto.chat import ChatDto
-from ..response.chat import ChatResponse
 from typing import List
 
 class ChatService:
     def __init__(self):
         self.__chatGPTApi = ChatGPTApiService()
 
-    async def get_chat_message(self, dto: ChatDto):
-        print(dto.messages)
-        messages = dto.messages
-        text = dto.text
+    def get_chat_message(self, dto: ChatDto):
+        print(dto['messages'])
+        messages: List[dict[str, str]] = dto['messages']
+        text: str = dto['text']
 
         # 初回のchat送信時のみ、systemプロンプトを加える
         if len(messages) == 0:
@@ -31,14 +30,8 @@ class ChatService:
         messages.append(messageModel)
 
         # 入力テキストをChatGPTに送信する
-        result = await self.__chatGPTApi.chat(messages)
-        print('test')
-        async for chunk in result:
-            yield ChatGPTMessageModel(
-                content=f"{chunk}",
-                role=CHAT_GPT_CONSTANT.ROLE['ASSISTANT']
-            ).dict()
-        # chatGPTから返却されたメッセージを履歴として格納する
-        # messages.append(resultMessageModel)
-        # response: ChatResponse = ChatResponse(messages=messages).dict()
-        # return response
+        chat_response = self.__chatGPTApi.chat(messages)
+        return {
+            'generator': chat_response,
+            'messages': messages
+        }
