@@ -1,17 +1,8 @@
-from ..clients.httpxClient import HttpxClient
-from ..constants.apiRequestConstant import API_REQUEST_CONSTANT
-from ..constants.chatGptConstant import CHAT_GPT_CONSTANT
 from ..dto.chatgpt import ChatGPTMessageModel
 from typing import List
-import config
 import openai
 
 class ChatGPTApiService:
-    __API_KEY: str = config.OPENAI_API_KEY
-    __COMPLETION_URL: str = API_REQUEST_CONSTANT.OPENAI['COMPLETION_URL']
-
-    def __init__(self):
-        self.__httpClient = HttpxClient()
 
     def chat(self, messages: List[ChatGPTMessageModel]):
         return openai.ChatCompletion.create(
