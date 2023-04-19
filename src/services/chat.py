@@ -22,7 +22,7 @@ class ChatService:
 
         # 入力テキストをChatGPTに送信する
         chat_response = self.__chatGPTApi.chat(messages)
-        return ChatResponseGenerator(generator=chat_response, messages=messages).dict()
+        return ChatResponseGenerator(generator=chat_response, messages=messages).to_dict()
 
     def __create_message(self, content: str, role: str) -> dict:
         return ChatGPTMessageModel(content=content, role=role).dict()
