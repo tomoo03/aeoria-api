@@ -1,4 +1,5 @@
 from ..api.dto.deepl import DeeplTranslateDto
+from ..api.response.deepl import DeeplTranslateResponse
 from ..api.services.deeplApiService import DeeplApiService
 from ..clients.vaderSentimentClient import VaderSentimentClient
 from ..dto.analyze import AnalyzeDto
@@ -21,7 +22,8 @@ class AnalyzeService:
                 text=text,
                 target_lang='EN'
             ).dict()
-            translatedText = await self.__deeplApi.translate(deeplTranslateDto)
+            deeplTranslateResponse: DeeplTranslateResponse = await self.__deeplApi.translate(deeplTranslateDto)
+            translatedText = deeplTranslateResponse['translations'][0]['text']
             print(translatedText)
 
             # 英訳結果テキストを代入
@@ -36,5 +38,6 @@ class AnalyzeService:
             pos=sentimentScore['pos'],
             compound=sentimentScore['compound']
         )
+        print(f"{response.dict()}")
 
         return response
