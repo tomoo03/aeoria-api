@@ -3,7 +3,7 @@ Content-Type: application/json
 
 {
   "source_lang": "JA",
-  "text": "私はとても幸せ"
+  "text": ""
 }
 
 ###
@@ -14,5 +14,5 @@ Content-Type: application/json
 
 {
   "messages": [],
-  "text": "ユニティちゃんの好きなプレステ３のゲームを教えて！"
+  "text": ""
 }
