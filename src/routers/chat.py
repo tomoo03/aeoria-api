@@ -4,12 +4,13 @@ from ..services.chat import ChatService
 from ..api.dto.chatgpt import ChatGPTMessageModel
 from ..api.constants.chatGptConstant import CHAT_GPT_CONSTANT
 from typing import Any, Generator, List
-from fastapi import APIRouter, Depends, WebSocket
+from fastapi import APIRouter, Depends, File, UploadFile, WebSocket
 import json
 
 router = APIRouter()
 delimiters = ['。', '！', '!', '？', '?', '\n'] # あとで正規表現に直す
 
+# テキストチャットAPI
 @router.websocket("/chat")
 async def get_chat_message(websocket: WebSocket, chatService: ChatService = Depends(ChatService)):
     await websocket.accept()
@@ -47,3 +48,9 @@ async def get_chat_message(websocket: WebSocket, chatService: ChatService = Depe
             if text in delimiters: # 区切り文字の場合、クライアント側に一文を返却する。
                 await send_response(ChatConstant.MESSAGE_CATEGORY['SPLIT'], message=sentence, message_index=message_index)
                 sentence, message_index = '', message_index + 1
+
+# ボイスチャットAPI
+@router.websocket("/voice-chat")
+async def voice_chat(file: UploadFile = File(...)):
+    contents = await file.read()
+    return

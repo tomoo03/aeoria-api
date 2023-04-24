@@ -5,6 +5,7 @@ import openai
 class ChatGPTApiService:
 
     def chat(self, messages: List[ChatGPTMessageModel]):
+        openai.Audio.transcribe()
         return openai.ChatCompletion.create(
             frequency_penalty=0.5,
             max_tokens=1024,
