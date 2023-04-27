@@ -10,5 +10,4 @@ async def voice_chat(
     file: UploadFile = File(...),
     transcriptionsService: TranscriptionsService = Depends(TranscriptionsService)
 ) -> WhisperResponse:
-    contents = await file.read()
-    return transcriptionsService.get_transcriptions(contents)
+    return transcriptionsService.get_transcriptions(file)
