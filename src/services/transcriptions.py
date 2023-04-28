@@ -6,7 +6,7 @@ class TranscriptionsService:
     def __init__(self):
         self.__whisperApi = WhisperApiService()
 
-    def get_transcriptions(self, file: UploadFile) -> WhisperResponse:
-        contents = self.__whisperApi.transcription(file)
+    async def get_transcriptions(self, file: UploadFile) -> WhisperResponse:
+        contents = await self.__whisperApi.transcription(file)
         print(contents)
         return contents
