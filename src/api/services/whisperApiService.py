@@ -3,7 +3,6 @@ from ..constants.apiRequestConstant import API_REQUEST_CONSTANT
 from ..response.whisper import WhisperResponse
 from fastapi import UploadFile
 import config
-# import openai
 
 class WhisperApiService:
     __API_KEY: str = config.OPENAI_API_KEY
@@ -28,14 +27,4 @@ class WhisperApiService:
         json = await HttpxClient().form_data_post(url, headers, files, data)
 
         return json
-        # model = "whisper-1"
-        # language = "ja"
-
-        # file.file.seek(0)  # ファイルポインタを先頭に戻す
-        # response = openai.Audio.transcribe(
-        #     model=model,
-        #     file=file.file,
-        #     language=language,
-        # )
-
-        # return response
+    
