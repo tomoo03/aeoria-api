@@ -13,15 +13,18 @@ class ChatService:
         print(dto['messages'])
         messages: List[dict[str, str]] = dto['messages']
 
-        # 初回のchat送信時のみ、systemプロンプトを加える
-        if len(messages) == 0:
-            messages.append(self.__create_message(CHAT_GPT_CONSTANT.SYSTEM_PROMPT, CHAT_GPT_CONSTANT.ROLE['SYSTEM']))
+        # chat送信時、messageの先頭にsystemプロンプトを加える
+        messages.insert(0, self.__create_message(CHAT_GPT_CONSTANT.SYSTEM_PROMPT, CHAT_GPT_CONSTANT.ROLE['SYSTEM']))
 
-        # 入力テキストを履歴として格納する
+        # user入力テキストを履歴として格納する
         messages.append(self.__create_message(dto['text'], CHAT_GPT_CONSTANT.ROLE['USER']))
 
         # 入力テキストをChatGPTに送信する
         chat_response = self.__chatGPTApi.chat(messages)
+
+        # systemプロンプトを取り除く
+        messages.pop(0)
+
         return ChatResponseGenerator(generator=chat_response, messages=messages).to_dict()
 
     def __create_message(self, content: str, role: str) -> dict:
