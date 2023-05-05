@@ -10,6 +10,8 @@ httpx = "*"
 vadersentiment = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 pydantic = "*"
+openai = "*"
+python-multipart = "*"
 
 [dev-packages]
 

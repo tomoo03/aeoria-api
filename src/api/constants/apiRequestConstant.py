@@ -10,9 +10,11 @@ class API_REQUEST_CONSTANT:
         'URL_BASE': 'https://api.deepl.com'
     }
     OPENAI = {
-        'COMPLETION_URL': 'https://api.openai.com/v1/chat/completions',
+        'COMPLETION_URL': 'v1/chat/completions',
         'SCHEME': {
             'AUTHORIZATION': 'Bearer'
         },
-        'JSON_CONTENT_TYPE': 'application/json'
+        'TRANSCRIPTION_URL': 'v1/audio/transcriptions',
+        'JSON_CONTENT_TYPE': 'application/json',
+        'URL_BASE': 'https://api.openai.com',
     }
