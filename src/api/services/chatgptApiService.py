@@ -1,5 +1,6 @@
 from ..dto.chatgpt import ChatGPTMessageModel
 from typing import List
+from ..constants.chatGptConstant import CHAT_GPT_CONSTANT
 import openai
 
 class ChatGPTApiService:
@@ -9,10 +10,10 @@ class ChatGPTApiService:
             frequency_penalty=0.5,
             max_tokens=1024,
             messages=messages,
-            model="gpt-3.5-turbo",
+            model=CHAT_GPT_CONSTANT.MODEL['GPT_4'],
             n=1,
             presence_penalty=0.5,
             stop=None,
             stream=True,
-            temperature=0.5,
+            temperature=CHAT_GPT_CONSTANT.TEMPERATURE,
         )
