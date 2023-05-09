@@ -24,27 +24,28 @@ async def get_chat_message(websocket: WebSocket, chatService: ChatService = Depe
         print(data)
         json_data: ChatDto = json.loads(data)
         print(json_data)
-        result = chatService.get_chat_message(json_data)
-        generator: Generator[Any | list | dict, None, None]
-        messages: List[ChatGPTMessageModel]
-        generator, messages = result['generator'], result['messages']
-        sentence, full_text, message_index = '', '', 0
+        if json_data['connection_mode'] == ChatConstant.CONNECTION_MODE['STANDARD']:
+            result = chatService.get_chat_message(json_data)
+            generator: Generator[Any | list | dict, None, None]
+            messages: List[ChatGPTMessageModel]
+            generator, messages = result['generator'], result['messages']
+            sentence, full_text, message_index = '', '', 0
 
-        for chunk in generator:
-            text = chunk['choices'][0]['delta'].get('content')
+            for chunk in generator:
+                text = chunk['choices'][0]['delta'].get('content')
 
-            if not text:
-                if chunk['choices'][0].get('finish_reason'):
-                    messages.append({
-                        'role': CHAT_GPT_CONSTANT.ROLE['ASSISTANT'],
-                        'content': full_text
-                    })
-                    await send_response(ChatConstant.MESSAGE_CATEGORY['FINISH'], messages=messages, message_index=message_index)
-                continue
+                if not text:
+                    if chunk['choices'][0].get('finish_reason'):
+                        messages.append({
+                            'role': CHAT_GPT_CONSTANT.ROLE['ASSISTANT'],
+                            'content': full_text
+                        })
+                        await send_response(ChatConstant.MESSAGE_CATEGORY['FINISH'], messages=messages, message_index=message_index)
+                    continue
 
-            sentence += text # 文字を結合
-            full_text += text
+                sentence += text # 文字を結合
+                full_text += text
 
-            if text in delimiters: # 区切り文字の場合、クライアント側に一文を返却する。
-                await send_response(ChatConstant.MESSAGE_CATEGORY['SPLIT'], message=sentence, message_index=message_index)
-                sentence, message_index = '', message_index + 1
+                if text in delimiters: # 区切り文字の場合、クライアント側に一文を返却する。
+                    await send_response(ChatConstant.MESSAGE_CATEGORY['SPLIT'], message=sentence, message_index=message_index)
+                    sentence, message_index = '', message_index + 1

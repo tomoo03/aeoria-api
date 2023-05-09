@@ -4,3 +4,4 @@ from typing import List
 class ChatDto(BaseModel):
     messages: List[dict[str, str]]
     text: str
+    get_mode: int

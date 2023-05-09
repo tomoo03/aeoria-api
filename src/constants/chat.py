@@ -6,3 +6,7 @@ class ChatConstant:
     RESPONSE_STATUS = {
         'SUCCESS': 'success',
     }
+    CONNECTION_MODE = {
+        'STANDARD': 0,
+        'COMMUNICATION': 1,
+    }
