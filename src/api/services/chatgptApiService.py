@@ -1,6 +1,6 @@
+from ..constants.chatGptConstant import CHAT_GPT_CONSTANT
 from ..dto.chatgpt import ChatGPTMessageModel
 from typing import List
-from ..constants.chatGptConstant import CHAT_GPT_CONSTANT
 import openai
 
 class ChatGPTApiService:
